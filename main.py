@@ -623,7 +623,7 @@ def main(page: ft.Page):
             mostrar_dialogo(page, dlg_reset)
 
         def abrir_menu_lateral(_=None):
-            usuario_actual = page.session.get("usuario") or "ADMIN"
+            usuario_actual = page.session.store.get("usuario") or "ADMIN"
 
             def ir_ruta(ruta):
                 cerrar_overlay()
@@ -631,7 +631,7 @@ def main(page: ft.Page):
 
             def cerrar_sesion(_):
                 cerrar_overlay()
-                page.session.clear()
+                page.session.store.clear()
                 page.go("/login")
 
             def item_menu(icono, titulo, ruta, activo=False):
@@ -1080,7 +1080,7 @@ def main(page: ft.Page):
         def cambiar_pantalla(e=None):
             page.views.clear()
             cerrar_overlay()
-            usuario_actual = page.session.get("usuario")
+            usuario_actual = page.session.store.get("usuario")
             
             if not usuario_actual and page.route != "/login":
                 page.go("/login")
@@ -1096,7 +1096,7 @@ def main(page: ft.Page):
                 def ingresar(_):
                     vendedor = db("SELECT nombre FROM Preventistas WHERE nombre=? AND pin=?", (inp_user.value.strip().upper(), inp_pin.value.strip()), fetch=True)
                     if vendedor:
-                        page.session.set("usuario", vendedor[0])
+                        page.session.store.set("usuario", vendedor[0])
                         page.go("/")
                     else: 
                         mostrar_snack(page, "Usuario o PIN incorrectos", COLORES["danger"])
@@ -2140,8 +2140,14 @@ def main(page: ft.Page):
         cambiar_pantalla()
 
     except Exception:
-        page.clean()
-        page.add(ft.Text("¡ERROR CRÍTICO!", color="white", bgcolor="red", size=24, weight="bold"), ft.Text(traceback.format_exc(), color="red"))
+        # Mostrar el error sin dejar la aplicación sin una vista raíz.
+        error_controls = [
+            ft.Text("¡ERROR CRÍTICO!", color="white", bgcolor="red", size=24, weight="bold"),
+            ft.Text(traceback.format_exc(), color="red"),
+        ]
+        page.views.clear()
+        page.views.append(ft.View("/error", error_controls))
+        page.update()
         page.update()
 
 if __name__ == "__main__":
