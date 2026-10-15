@@ -1,0 +1,44 @@
+name: Build APK
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar el código del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Configurar Java (necesario para compilar Android)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Configurar Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.8'
+
+      - name: Instalar Flet
+        run: pip install flet
+
+      - name: Aceptar licencias de Android
+        run: yes | flutter doctor --android-licenses || true
+
+      - name: Compilar APK
+        run: flet build apk --verbose
+
+      - name: Subir el APK como artefacto descargable
+        uses: actions/upload-artifact@v4
+        with:
+          name: XiomiDistribuidora-apk
+          path: build/apk/*.apk
