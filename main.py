@@ -1078,8 +1078,11 @@ def main(page: ft.Page):
         # NAVEGACIÓN PRINCIPAL POR RUTAS
         # ==========================================================
         def cambiar_pantalla(e=None):
+            # No llamar cerrar_overlay() después de limpiar las vistas: esa función
+            # ejecuta page.update() y Flet puede quedar con la lista de vistas vacía.
             page.views.clear()
-            cerrar_overlay()
+            overlay_modal.visible = False
+            overlay_modal.content = None
             usuario_actual = page.session.store.get("usuario")
             
             if not usuario_actual and page.route != "/login":
