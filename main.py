@@ -40,6 +40,25 @@ _candidatas_db_madre = [
 ]
 ruta_db_madre = next((p for p in _candidatas_db_madre if os.path.exists(p)), None)
 
+# Registro de diagnóstico persistente: permite identificar fallos de inicio en Android.
+ruta_log_inicio = os.path.join(directorio_datos_usuario, "xiomi_inicio_error.txt")
+
+def registrar_inicio(etapa, detalle=None):
+    try:
+        os.makedirs(directorio_datos_usuario, exist_ok=True)
+        with open(ruta_log_inicio, "a", encoding="utf-8") as archivo_log:
+            archivo_log.write(f"\\n[{datetime.now().isoformat(timespec='seconds')}] {etapa}\\n")
+            if detalle:
+                archivo_log.write(str(detalle) + "\\n")
+    except Exception:
+        pass
+    try:
+        print(f"[XIOMI-INICIO] {etapa}", flush=True)
+        if detalle:
+            print(str(detalle), flush=True)
+    except Exception:
+        pass
+
 def abrir_archivo_local(ruta_absoluta):
     try:
         if os.name == 'nt': 
@@ -558,6 +577,7 @@ def cerrar_dialogo(page, dialogo=None):
 # 4. INTERFAZ GRÁFICA ESTILO APK (FACTURAS DESDE CERO)
 # ==========================================
 def main(page: ft.Page):
+    registrar_inicio("ENTRADA A main()")
     try:
         page.title = "XIOMI Distribuidora"
         page.theme_mode = ft.ThemeMode.LIGHT
@@ -572,7 +592,9 @@ def main(page: ft.Page):
         except Exception:
             pass
 
+        registrar_inicio("Configuración de página lista; inicializando base de datos")
         inicializar_base_datos()
+        registrar_inicio("Base de datos inicializada correctamente")
 
         carrito = {}
         estado_carrito = {
@@ -2139,64 +2161,50 @@ def main(page: ft.Page):
             page.update()
 
         page.on_route_change = cambiar_pantalla
+        registrar_inicio("Navegación configurada; abriendo pantalla de inicio de sesión")
         page.route = "/login"
         cambiar_pantalla()
+        registrar_inicio("Pantalla de inicio de sesión construida")
 
     except Exception:
-        # Registrar el error de inicio y mostrarlo directamente en la página.
-        # Esto evita una pantalla blanca si falla el armado de las rutas/vistas.
         detalle_error = traceback.format_exc()
-        try:
-            ruta_log = os.path.join(directorio_datos_usuario, "xiomi_inicio_error.txt")
-            with open(ruta_log, "w", encoding="utf-8") as archivo_log:
-                archivo_log.write(detalle_error)
-        except Exception:
-            pass
+        registrar_inicio("ERROR CRÍTICO DURANTE EL INICIO", detalle_error)
 
+        # Intentar mostrar el error usando una vista mínima, independiente del diseño principal.
         try:
             page.views.clear()
         except Exception:
             pass
         try:
-            page.controls.clear()
+            page.clean()
         except Exception:
-            pass
-
+            try:
+                page.controls.clear()
+            except Exception:
+                pass
         try:
-            mensaje_error = ft.Column(
-                controls=[
-                    ft.Text("XIOMI DISTRIBUIDORA", size=20, weight="bold", color="#FFFFFF"),
-                    ft.Text("No se pudo iniciar la aplicación", size=17, weight="bold", color="#FFFFFF"),
-                    ft.Text(
-                        "Copiá o fotografiá el detalle técnico de abajo para corregir el problema.",
-                        size=12,
-                        color="#E5E7EB",
-                    ),
-                    ft.Container(
-                        content=ft.Text(detalle_error[-6000:], selectable=True, size=11, color="#FCA5A5"),
-                        padding=12,
-                        bgcolor="#1F2937",
-                        border_radius=8,
-                        expand=True,
-                    ),
-                ],
-                expand=True,
-                scroll=ft.ScrollMode.AUTO,
-                spacing=12,
-            )
             page.add(
                 ft.Container(
-                    content=mensaje_error,
-                    padding=20,
+                    content=ft.Column(
+                        [
+                            ft.Text("XIOMI DISTRIBUIDORA", size=20, weight="bold", color="white"),
+                            ft.Text("Error al iniciar", size=17, weight="bold", color="white"),
+                            ft.Text("Sacá una captura de este mensaje para corregir el problema.", size=12, color="#E5E7EB"),
+                            ft.Text(detalle_error[-3500:], size=11, color="#FCA5A5", selectable=True),
+                        ],
+                        scroll=ft.ScrollMode.AUTO,
+                        spacing=10,
+                        expand=True,
+                    ),
+                    padding=16,
                     expand=True,
                     bgcolor="#111827",
                 )
             )
             page.update()
+            registrar_inicio("Pantalla de diagnóstico mostrada")
         except Exception:
-            # Si también falla la pantalla de diagnóstico, el traceback queda guardado
-            # en xiomi_inicio_error.txt dentro del almacenamiento privado de la app.
-            pass
+            registrar_inicio("No se pudo dibujar la pantalla de diagnóstico; revisar el registro guardado", traceback.format_exc())
 
 if __name__ == "__main__":
     ft.run(main, view=ft.AppView.FLET_APP)
