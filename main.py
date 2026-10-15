@@ -600,7 +600,7 @@ def main(page: ft.Page):
         page.add(
             ft.Container(
                 expand=True,
-                alignment=ft.alignment.center,
+                alignment=ft.Alignment(0, 0),
                 bgcolor="#FFFFFF",
                 content=ft.Column(
                     [
@@ -857,13 +857,13 @@ def main(page: ft.Page):
                     ft.Container(
                         bgcolor="#FFFFFF",
                         padding=ft.padding.symmetric(vertical=8),
-                        alignment=ft.alignment.center,
+                        alignment=ft.Alignment(0, 0),
                         content=ft.Container(
                             width=50,
                             height=50,
                             border_radius=25,
                             bgcolor=COLORES["header_green"],
-                            alignment=ft.alignment.center,
+                            alignment=ft.Alignment(0, 0),
                             shadow=ft.BoxShadow(blur_radius=8, color="#55000000", offset=ft.Offset(0, 2)),
                             ink=True,
                             on_click=abrir_nuevo_cliente_rapido,
@@ -1093,13 +1093,13 @@ def main(page: ft.Page):
                     ft.Container(
                         bgcolor="#FFFFFF",
                         padding=ft.padding.symmetric(vertical=8),
-                        alignment=ft.alignment.center,
+                        alignment=ft.Alignment(0, 0),
                         content=ft.Container(
                             width=50,
                             height=50,
                             border_radius=25,
                             bgcolor=COLORES["header_purple"],
-                            alignment=ft.alignment.center,
+                            alignment=ft.Alignment(0, 0),
                             shadow=ft.BoxShadow(blur_radius=8, color="#55000000", offset=ft.Offset(0, 2)),
                             ink=True,
                             on_click=abrir_nuevo_articulo_rapido,
@@ -1150,12 +1150,12 @@ def main(page: ft.Page):
                 page.views.append(ft.View("/login", [
                     ft.Container(
                         expand=True,
-                        alignment=ft.alignment.center,
+                        alignment=ft.Alignment(0, 0),
                         padding=24,
                         content=ft.Column([
                             ft.Container(
                                 width=80, height=80, border_radius=40, bgcolor=COLORES["header_blue"],
-                                alignment=ft.alignment.center,
+                                alignment=ft.Alignment(0, 0),
                                 content=ft.Icon("storefront", size=44, color="white")
                             ),
                             ft.Text("XIOMI Distribuidora", size=26, weight="bold", color=COLORES["header_blue"]),
@@ -1256,7 +1256,7 @@ def main(page: ft.Page):
                         lista_facturas_ui.controls.append(
                             ft.Container(
                                 padding=40,
-                                alignment=ft.alignment.center,
+                                alignment=ft.Alignment(0, 0),
                                 content=ft.Text("Facturero en cero (0 facturas).\nPulsá el botón + abajo para emitir la Factura #1.", size=14, weight="bold", color=COLORES["muted"], text_align="center")
                             )
                         )
@@ -1314,7 +1314,7 @@ def main(page: ft.Page):
                         border=ft.border.only(bottom=ft.BorderSide(1, COLORES["divider"])),
                         ink=True,
                         on_click=toggle_filtro,
-                        alignment=ft.alignment.center,
+                        alignment=ft.Alignment(0, 0),
                         content=ft.Text("Pulsa para filtrar lista", size=15, weight="bold", color="#000000")
                     ),
                     inp_filtro_facturas,
@@ -1322,13 +1322,13 @@ def main(page: ft.Page):
                     ft.Container(
                         bgcolor="#FFFFFF",
                         padding=ft.padding.symmetric(vertical=8),
-                        alignment=ft.alignment.center,
+                        alignment=ft.Alignment(0, 0),
                         content=ft.Container(
                             width=54,
                             height=54,
                             border_radius=27,
                             bgcolor=COLORES["fab_blue"],
-                            alignment=ft.alignment.center,
+                            alignment=ft.Alignment(0, 0),
                             shadow=ft.BoxShadow(blur_radius=10, color="#66000000", offset=ft.Offset(0, 3)),
                             ink=True,
                             on_click=lambda _: mostrar_modal_seleccionar_cliente(iniciar_nueva_factura_con_cliente),
@@ -2225,11 +2225,7 @@ def main(page: ft.Page):
         detalle_error = traceback.format_exc()
         registrar_inicio("ERROR CRÍTICO DURANTE EL INICIO", detalle_error)
 
-        # Intentar mostrar el error usando una vista mínima, independiente del diseño principal.
-        try:
-            page.views.clear()
-        except Exception:
-            pass
+        # Conservar la vista raíz de Flet: si se vacía page.views, page.add() falla.
         try:
             page.clean()
         except Exception:
