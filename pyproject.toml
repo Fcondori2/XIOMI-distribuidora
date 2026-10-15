@@ -1,2 +1,22 @@
+[project]
+name = "xiomi-distribuidora"
+version = "1.0.0"
+description = "Sistema de gestión comercial Xiomi Distribuidora"
+requires-python = ">=3.12"
+dependencies = [
+    "flet==0.86.5",
+    "fpdf2",
+]
+
+[tool.flet]
+product = "XIOMI Distribuidora"
+org = "com.flet"
+compile_app = false
+
+[tool.flet.boot_screen.flet]
+theme_mode = "light"
+spinner_size = 32
+startup_message = "Iniciando XIOMI Distribuidora..."
+
 [tool.flet.flutter.pubspec.dependency_overrides]
 jni = "1.1.0"
