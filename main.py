@@ -1121,9 +1121,11 @@ def main(page: ft.Page):
         # NAVEGACIÓN PRINCIPAL POR RUTAS
         # ==========================================================
         def cambiar_pantalla(e=None):
+            registrar_inicio("ROUTE_HANDLER: entrada", f"route={page.route}; views_antes={len(page.views)}")
             # No llamar cerrar_overlay() después de limpiar las vistas: esa función
             # ejecuta page.update() y Flet puede quedar con la lista de vistas vacía.
             page.views.clear()
+            registrar_inicio("ROUTE_HANDLER: vistas limpiadas", f"route={page.route}; views={len(page.views)}")
             overlay_modal.visible = False
             overlay_modal.content = None
             usuario_actual = page.session.store.get("usuario")
@@ -1136,6 +1138,7 @@ def main(page: ft.Page):
             # LOGIN
             # ------------------------------------------------------
             if page.route == "/login":
+                registrar_inicio("ROUTE_HANDLER: construyendo login")
                 inp_user = ft.TextField(label="Usuario (Ej: ABR012026)", width=310, border_color=COLORES["header_blue"])
                 inp_pin = ft.TextField(label="PIN (Ej: 1111)", password=True, can_reveal_password=True, width=310, border_color=COLORES["header_blue"])
                 
@@ -1173,7 +1176,9 @@ def main(page: ft.Page):
                         ], horizontal_alignment=ft.CrossAxisAlignment.CENTER, alignment=ft.MainAxisAlignment.CENTER, spacing=12)
                     )
                 ], padding=0, bgcolor="#FFFFFF"))
+                registrar_inicio("ROUTE_HANDLER: login agregado", f"views={len(page.views)}")
                 page.update()
+                registrar_inicio("ROUTE_HANDLER: update login completado", f"route={page.route}; views={len(page.views)}")
                 return
 
             cuerpo_principal = ft.Container(expand=True)
@@ -2182,7 +2187,7 @@ def main(page: ft.Page):
             page.update()
 
         page.on_route_change = cambiar_pantalla
-        registrar_inicio("Navegación preparada; iniciando preparación de la base de datos en segundo plano")
+        registrar_inicio("Manejador de rutas registrado; iniciando preparación de la base de datos en segundo plano")
 
         async def completar_inicio():
             try:
@@ -2191,7 +2196,7 @@ def main(page: ft.Page):
                 page.clean()
                 registrar_inicio("Base de datos lista; solicitando navegación oficial de Flet hacia /login")
                 page.go("/login")
-                registrar_inicio(f"Solicitud de navegación /login enviada; ruta actual: {page.route}")
+                registrar_inicio(f"Solicitud page.go('/login') ejecutada; ruta observada inmediatamente: {page.route}")
             except Exception:
                 detalle_error_inicio = traceback.format_exc()
                 registrar_inicio("ERROR AL PREPARAR LA APLICACIÓN", detalle_error_inicio)
