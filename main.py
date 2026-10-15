@@ -8,7 +8,7 @@ import json
 import urllib.parse
 from contextlib import contextmanager
 from datetime import date, datetime, timedelta
-
+ 
 # ==========================================
 # 0. RUTAS ABSOLUTAS Y BASE DE DATOS LIMPIA PARA APK
 # ==========================================
