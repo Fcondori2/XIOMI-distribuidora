@@ -59,6 +59,9 @@ def registrar_inicio(etapa, detalle=None):
     except Exception:
         pass
 
+# Registrar que el módulo llegó a cargarse; se guarda fuera del bundle de solo lectura.
+registrar_inicio("MÓDULO main.py cargado; imports completados")
+
 def abrir_archivo_local(ruta_absoluta):
     try:
         if os.name == 'nt': 
@@ -592,9 +595,29 @@ def main(page: ft.Page):
         except Exception:
             pass
 
-        registrar_inicio("Configuración de página lista; inicializando base de datos")
+        # Pantalla mínima inmediata: permite distinguir un fallo de UI de uno de base de datos.
+        page.add(
+            ft.Container(
+                expand=True,
+                alignment=ft.alignment.center,
+                bgcolor="#FFFFFF",
+                content=ft.Column(
+                    [
+                        ft.ProgressRing(width=38, height=38, stroke_width=4, color="#2C4B70"),
+                        ft.Text("XIOMI DISTRIBUIDORA", size=21, weight="bold", color="#2C4B70"),
+                        ft.Text("Preparando la aplicación...", size=14, color="#555555"),
+                    ],
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    spacing=18,
+                ),
+            )
+        )
+        page.update()
+        registrar_inicio("PANTALLA DE ARRANQUE VISIBLE; inicializando base de datos")
         inicializar_base_datos()
         registrar_inicio("Base de datos inicializada correctamente")
+        page.clean()
 
         carrito = {}
         estado_carrito = {
