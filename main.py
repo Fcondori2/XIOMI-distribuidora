@@ -2143,14 +2143,60 @@ def main(page: ft.Page):
         cambiar_pantalla()
 
     except Exception:
-        # Mostrar el error sin dejar la aplicación sin una vista raíz.
-        error_controls = [
-            ft.Text("¡ERROR CRÍTICO!", color="white", bgcolor="red", size=24, weight="bold"),
-            ft.Text(traceback.format_exc(), color="red"),
-        ]
-        page.views.clear()
-        page.views.append(ft.View("/error", error_controls))
-        page.update()
+        # Registrar el error de inicio y mostrarlo directamente en la página.
+        # Esto evita una pantalla blanca si falla el armado de las rutas/vistas.
+        detalle_error = traceback.format_exc()
+        try:
+            ruta_log = os.path.join(directorio_datos_usuario, "xiomi_inicio_error.txt")
+            with open(ruta_log, "w", encoding="utf-8") as archivo_log:
+                archivo_log.write(detalle_error)
+        except Exception:
+            pass
+
+        try:
+            page.views.clear()
+        except Exception:
+            pass
+        try:
+            page.controls.clear()
+        except Exception:
+            pass
+
+        try:
+            mensaje_error = ft.Column(
+                controls=[
+                    ft.Text("XIOMI DISTRIBUIDORA", size=20, weight="bold", color="#FFFFFF"),
+                    ft.Text("No se pudo iniciar la aplicación", size=17, weight="bold", color="#FFFFFF"),
+                    ft.Text(
+                        "Copiá o fotografiá el detalle técnico de abajo para corregir el problema.",
+                        size=12,
+                        color="#E5E7EB",
+                    ),
+                    ft.Container(
+                        content=ft.Text(detalle_error[-6000:], selectable=True, size=11, color="#FCA5A5"),
+                        padding=12,
+                        bgcolor="#1F2937",
+                        border_radius=8,
+                        expand=True,
+                    ),
+                ],
+                expand=True,
+                scroll=ft.ScrollMode.AUTO,
+                spacing=12,
+            )
+            page.add(
+                ft.Container(
+                    content=mensaje_error,
+                    padding=20,
+                    expand=True,
+                    bgcolor="#111827",
+                )
+            )
+            page.update()
+        except Exception:
+            # Si también falla la pantalla de diagnóstico, el traceback queda guardado
+            # en xiomi_inicio_error.txt dentro del almacenamiento privado de la app.
+            pass
 
 if __name__ == "__main__":
     ft.app(target=main, view=ft.AppView.FLET_APP)
