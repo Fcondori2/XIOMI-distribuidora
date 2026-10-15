@@ -2199,4 +2199,4 @@ def main(page: ft.Page):
             pass
 
 if __name__ == "__main__":
-    ft.app(target=main, view=ft.AppView.FLET_APP)
+    ft.run(main, view=ft.AppView.FLET_APP)
