@@ -2148,7 +2148,6 @@ def main(page: ft.Page):
         page.views.clear()
         page.views.append(ft.View("/error", error_controls))
         page.update()
-        page.update()
 
 if __name__ == "__main__":
     ft.app(target=main, view=ft.AppView.FLET_APP)
