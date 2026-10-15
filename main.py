@@ -1,4 +1,5 @@
 import flet as ft
+import asyncio
 import os
 import sqlite3
 import traceback
@@ -614,10 +615,7 @@ def main(page: ft.Page):
             )
         )
         page.update()
-        registrar_inicio("PANTALLA DE ARRANQUE VISIBLE; inicializando base de datos")
-        inicializar_base_datos()
-        registrar_inicio("Base de datos inicializada correctamente")
-        page.clean()
+        registrar_inicio("PANTALLA DE ARRANQUE PREPARADA; la base de datos se inicializará sin bloquear la interfaz")
 
         carrito = {}
         estado_carrito = {
@@ -2184,10 +2182,44 @@ def main(page: ft.Page):
             page.update()
 
         page.on_route_change = cambiar_pantalla
-        registrar_inicio("Navegación configurada; abriendo pantalla de inicio de sesión")
-        page.route = "/login"
-        cambiar_pantalla()
-        registrar_inicio("Pantalla de inicio de sesión construida")
+        registrar_inicio("Navegación preparada; iniciando preparación de la base de datos en segundo plano")
+
+        async def completar_inicio():
+            try:
+                await asyncio.to_thread(inicializar_base_datos)
+                registrar_inicio("Base de datos inicializada correctamente")
+                page.clean()
+                page.route = "/login"
+                cambiar_pantalla()
+                registrar_inicio("Pantalla de inicio de sesión construida")
+            except Exception:
+                detalle_error_inicio = traceback.format_exc()
+                registrar_inicio("ERROR AL PREPARAR LA APLICACIÓN", detalle_error_inicio)
+                try:
+                    page.clean()
+                    page.add(
+                        ft.Container(
+                            content=ft.Column(
+                                [
+                                    ft.Text("XIOMI DISTRIBUIDORA", size=20, weight="bold", color="white"),
+                                    ft.Text("No se pudo preparar la aplicación", size=17, weight="bold", color="white"),
+                                    ft.Text("Sacá una captura de este mensaje para corregir el problema.", size=12, color="#E5E7EB"),
+                                    ft.Text(detalle_error_inicio[-3000:], size=11, color="#FCA5A5", selectable=True),
+                                ],
+                                scroll=ft.ScrollMode.AUTO,
+                                spacing=10,
+                                expand=True,
+                            ),
+                            padding=16,
+                            expand=True,
+                            bgcolor="#111827",
+                        )
+                    )
+                    page.update()
+                except Exception:
+                    registrar_inicio("No se pudo mostrar el error de inicialización", traceback.format_exc())
+
+        page.run_task(completar_inicio)
 
     except Exception:
         detalle_error = traceback.format_exc()
