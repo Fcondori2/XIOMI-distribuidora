@@ -35,7 +35,7 @@ jobs:
         run: yes | flutter doctor --android-licenses || true
 
       - name: Compilar APK
-        run: flet build apk --verbose
+        run: flet build apk --verbose --module-name app.py
 
       - name: Subir el APK como artefacto descargable
         uses: actions/upload-artifact@v4
