@@ -2207,4 +2207,4 @@ def main(page: ft.Page):
             registrar_inicio("No se pudo dibujar la pantalla de diagnóstico; revisar el registro guardado", traceback.format_exc())
 
 if __name__ == "__main__":
-    ft.run(main, view=ft.AppView.FLET_APP)
+    ft.run(main)
