@@ -47,9 +47,9 @@ def registrar_inicio(etapa, detalle=None):
     try:
         os.makedirs(directorio_datos_usuario, exist_ok=True)
         with open(ruta_log_inicio, "a", encoding="utf-8") as archivo_log:
-            archivo_log.write(f"\\n[{datetime.now().isoformat(timespec='seconds')}] {etapa}\\n")
+            archivo_log.write(f"\n[{datetime.now().isoformat(timespec='seconds')}] {etapa}\n")
             if detalle:
-                archivo_log.write(str(detalle) + "\\n")
+                archivo_log.write(str(detalle) + "\n")
     except Exception:
         pass
     try:
