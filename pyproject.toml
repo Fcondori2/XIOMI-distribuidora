@@ -4,7 +4,7 @@ version = "1.0.0"
 description = "Sistema de gestión comercial Xiomi Distribuidora"
 requires-python = ">=3.12"
 dependencies = [
-    "flet==0.86.5",
+    "flet==1.0.4",
     "fpdf2",
 ]
 
@@ -22,6 +22,3 @@ app = false
 theme_mode = "light"
 spinner_size = 32
 startup_message = "Preparando XIOMI Distribuidora..."
-
-[tool.flet.flutter.pubspec.dependency_overrides]
-jni = "1.1.0"
