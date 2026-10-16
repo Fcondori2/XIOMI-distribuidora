@@ -23,8 +23,17 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Configurar Flutter requerido por Flet
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.8'
+          cache: true
+
       - name: Instalar dependencias compatibles
         run: python -m pip install -r requirements.txt
+
+      - name: Aceptar licencias de Android
+        run: yes | flutter doctor --android-licenses || true
 
       - name: Verificar versiones de Flet y Flutter requeridas
         run: python -c "import flet, flet.version; print('Flet:', flet.__version__); print('Flutter requerido por Flet:', flet.version.flutter_version)"
