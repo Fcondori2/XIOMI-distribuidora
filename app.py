@@ -1,64 +1,64 @@
-"""Punto de entrada ligero para Android.
+"""Punto de entrada Android de XIOMI Distribuidora.
 
-Muestra una pantalla inmediatamente y carga el programa principal después.
-Si main.py falla durante la importación o el arranque, presenta el error en pantalla
-en vez de dejar al usuario indefinidamente en el splash nativo de Flet.
+Mantiene un único flujo de inicio: delega directamente en main.py, que ya
+muestra la pantalla de preparación, inicializa la base de datos en segundo
+plano y registra errores de inicio. Evita tareas anidadas y limpiezas de
+pantalla desde un segundo cargador, que podían dejar una vista gris vacía.
 """
-import asyncio
-import importlib
 import traceback
 
 import flet as ft
 
 
 def main(page: ft.Page):
-    page.title = "XIOMI Distribuidora"
-    page.bgcolor = "#FFFFFF"
-    page.padding = 24
-    page.spacing = 12
-    page.add(
-        ft.Text("XIOMI Distribuidora", size=24, weight=ft.FontWeight.BOLD),
-        ft.Text("Preparando el sistema…", size=16),
-        ft.ProgressRing(),
-    )
-    page.update()
+    try:
+        # Importar y ejecutar en el mismo flujo de Flet evita una segunda
+        # tarea de arranque compitiendo con la navegación de main.py.
+        from main import main as iniciar_aplicacion
 
-    async def iniciar():
+        iniciar_aplicacion(page)
+    except Exception as exc:
+        detalle = traceback.format_exc()
         try:
-            # Importar en un hilo evita bloquear la interfaz mientras se carga
-            # main.py y permite mostrar cualquier error de importación.
-            modulo = await asyncio.to_thread(importlib.import_module, "main")
-            funcion_principal = getattr(modulo, "main", None)
-            if not callable(funcion_principal):
-                raise RuntimeError("No se encontró la función main(page) en main.py")
-
             page.clean()
-            funcion_principal(page)
-            page.update()
-        except Exception as exc:
-            detalle = traceback.format_exc()
-            try:
-                page.clean()
-                page.add(
-                    ft.Text("No se pudo iniciar XIOMI Distribuidora", size=21,
-                            weight=ft.FontWeight.BOLD, color="#B91C1C"),
-                    ft.Text(
-                        f"Error: {type(exc).__name__}: {exc}",
-                        size=15,
-                        selectable=True,
-                    ),
-                    ft.Text(
-                        "Copiá este mensaje para identificar la causa. "
-                        "Los datos de la aplicación no se borraron.",
-                        size=13,
-                    ),
-                    ft.Text(detalle[-7000:], size=11, selectable=True),
+            page.bgcolor = "#111827"
+            page.padding = 16
+            page.add(
+                ft.Column(
+                    [
+                        ft.Text(
+                            "XIOMI DISTRIBUIDORA",
+                            size=22,
+                            weight=ft.FontWeight.BOLD,
+                            color="#FFFFFF",
+                        ),
+                        ft.Text(
+                            "No se pudo iniciar la aplicación",
+                            size=17,
+                            weight=ft.FontWeight.BOLD,
+                            color="#FCA5A5",
+                        ),
+                        ft.Text(
+                            f"{type(exc).__name__}: {exc}",
+                            size=14,
+                            color="#FFFFFF",
+                            selectable=True,
+                        ),
+                        ft.Text(
+                            detalle[-7000:],
+                            size=11,
+                            color="#E5E7EB",
+                            selectable=True,
+                        ),
+                    ],
+                    expand=True,
+                    scroll=ft.ScrollMode.AUTO,
+                    spacing=12,
                 )
-                page.update()
-            except Exception:
-                print("[XIOMI-ARRANQUE] " + detalle, flush=True)
-
-    page.run_task(iniciar)
+            )
+            page.update()
+        except Exception:
+            print("[XIOMI-ARRANQUE] " + detalle, flush=True)
 
 
 if __name__ == "__main__":
