@@ -1,4 +1,4 @@
-"""Entrada de diagnóstico para aislar la pantalla gris en Android."""
+"""Punto de entrada Android de XIOMI Distribuidora."""
 import traceback
 import flet as ft
 
@@ -10,17 +10,16 @@ def main(page: ft.Page):
     page.theme_mode = ft.ThemeMode.LIGHT
 
     estado = ft.Text(
-        "La interfaz de Flet se inició correctamente. El siguiente botón prueba main.py.",
+        "Si ves esta pantalla, Flet está dibujando la interfaz correctamente.",
         size=16,
         color="#1F2937",
         selectable=True,
+        text_align=ft.TextAlign.CENTER,
     )
-    detalle = ft.Text("", size=12, color="#B91C1C", selectable=True)
 
     def iniciar_sistema(_):
         boton.disabled = True
         estado.value = "Cargando el sistema de gestión..."
-        detalle.value = ""
         page.update()
         try:
             from main import main as iniciar_aplicacion
@@ -29,25 +28,22 @@ def main(page: ft.Page):
             page.update()
         except Exception as exc:
             error = traceback.format_exc()
-            try:
-                page.clean()
-                page.bgcolor = "#FFFFFF"
-                page.add(
-                    ft.Column(
-                        [
-                            ft.Text("XIOMI: ERROR AL INICIAR", size=22, weight=ft.FontWeight.BOLD, color="#B91C1C"),
-                            ft.Text(f"{type(exc).__name__}: {exc}", size=15, color="#111827", selectable=True),
-                            ft.Text(error[-8000:], size=11, color="#374151", selectable=True),
-                            ft.ElevatedButton("Volver a probar", on_click=reiniciar_pantalla),
-                        ],
-                        scroll=ft.ScrollMode.AUTO,
-                        expand=True,
-                        spacing=12,
-                    )
+            page.clean()
+            page.bgcolor = "#FFFFFF"
+            page.add(
+                ft.Column(
+                    [
+                        ft.Text("XIOMI: ERROR AL INICIAR", size=22, weight=ft.FontWeight.BOLD, color="#B91C1C"),
+                        ft.Text(f"{type(exc).__name__}: {exc}", size=15, color="#111827", selectable=True),
+                        ft.Text(error[-8000:], size=11, color="#374151", selectable=True),
+                        ft.ElevatedButton("Volver a probar", on_click=reiniciar_pantalla),
+                    ],
+                    scroll=ft.ScrollMode.AUTO,
+                    expand=True,
+                    spacing=12,
                 )
-                page.update()
-            except Exception:
-                print("[XIOMI-DIAGNOSTICO] " + error, flush=True)
+            )
+            page.update()
 
     def reiniciar_pantalla(_):
         page.clean()
@@ -70,10 +66,9 @@ def main(page: ft.Page):
                 [
                     ft.Icon("storefront", size=58, color="#2C4B70"),
                     ft.Text("XIOMI DISTRIBUIDORA", size=24, weight=ft.FontWeight.BOLD, color="#2C4B70"),
-                    ft.Text("Prueba de inicio", size=18, weight=ft.FontWeight.BOLD, color="#111827"),
+                    ft.Text("Diagnóstico de inicio", size=18, weight=ft.FontWeight.BOLD, color="#111827"),
                     estado,
                     boton,
-                    detalle,
                 ],
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                 alignment=ft.MainAxisAlignment.CENTER,
@@ -85,5 +80,6 @@ def main(page: ft.Page):
     page.update()
 
 
-if __name__ == "__main__":
-    ft.run(main)
+# Importante: Flet debe ejecutar el punto de entrada también cuando empaqueta
+# el módulo para Android; no depender de __name__ == "__main__".
+ft.run(main)
