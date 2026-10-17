@@ -670,12 +670,12 @@ def main(page: ft.Page):
 
             def ir_ruta(ruta):
                 cerrar_overlay()
-                page.go(ruta)
+                page.navigate(ruta)
 
             def cerrar_sesion(_):
                 cerrar_overlay()
                 page.session.store.clear()
-                page.go("/login")
+                page.navigate("/login")
 
             def item_menu(icono, titulo, ruta, activo=False):
                 return ft.Container(
@@ -1131,7 +1131,7 @@ def main(page: ft.Page):
             usuario_actual = page.session.store.get("usuario")
             
             if not usuario_actual and page.route != "/login":
-                page.go("/login")
+                page.navigate("/login")
                 return
 
             # ------------------------------------------------------
@@ -1146,7 +1146,7 @@ def main(page: ft.Page):
                     vendedor = db("SELECT nombre FROM Preventistas WHERE nombre=? AND pin=?", (inp_user.value.strip().upper(), inp_pin.value.strip()), fetch=True)
                     if vendedor:
                         page.session.store.set("usuario", vendedor[0])
-                        page.go("/")
+                        page.navigate("/")
                     else: 
                         mostrar_snack(page, "Usuario o PIN incorrectos", COLORES["danger"])
 
@@ -1208,7 +1208,7 @@ def main(page: ft.Page):
                         "fecha": date.today().strftime("%Y-%m-%d"),
                         "nota_texto": (dir_cli[0] if dir_cli and dir_cli[0] else ""),
                     })
-                    page.go("/carrito")
+                    page.navigate("/carrito")
 
                 def abrir_factura_existente(id_fac):
                     fac = db("SELECT numero_cliente, fecha FROM Facturas WHERE numero_factura = ?", (id_fac,), fetch=True)
@@ -1231,7 +1231,7 @@ def main(page: ft.Page):
                         "fecha": fac[1],
                         "nota_texto": (dir_cli[0] if dir_cli and dir_cli[0] else ""),
                     })
-                    page.go("/carrito")
+                    page.navigate("/carrito")
 
                 def cargar_lista_facturas(filtro=""):
                     lista_facturas_ui.controls.clear()
@@ -1504,7 +1504,7 @@ def main(page: ft.Page):
 
                         carrito.clear()
                         estado_carrito["editando"] = False
-                        page.go("/")
+                        page.navigate("/")
                     except Exception as ex:
                         mostrar_snack(page, f"Error al guardar: {ex}", COLORES["danger"])
                         btn_guardar.disabled = False
@@ -1527,7 +1527,7 @@ def main(page: ft.Page):
                         db("DELETE FROM Facturas WHERE numero_factura=?", (id_f,))
                     carrito.clear()
                     estado_carrito["editando"] = False
-                    page.go("/")
+                    page.navigate("/")
 
                 menu_tres_puntos = ft.PopupMenuButton(
                     icon="more_vert",
@@ -1536,7 +1536,7 @@ def main(page: ft.Page):
                         ft.PopupMenuItem(text="Imprimir / Exportar PDF", icon="print", on_click=imprimir_factura_actual),
                         ft.PopupMenuItem(text="Cambiar cliente", icon="person_search", on_click=cambiar_cliente_en_factura),
                         ft.PopupMenuItem(text="Cambiar fecha", icon="calendar_today", on_click=cambiar_fecha_modal),
-                        ft.PopupMenuItem(text="Ver historial de este cliente", icon="history", on_click=lambda _: (estado_historial_cli.update({"id_cliente": estado_carrito.get("id_cliente")}), page.go("/historial_cliente"))),
+                        ft.PopupMenuItem(text="Ver historial de este cliente", icon="history", on_click=lambda _: (estado_historial_cli.update({"id_cliente": estado_carrito.get("id_cliente")}), page.navigate("/historial_cliente"))),
                         ft.PopupMenuItem(text="Eliminar factura", icon="delete", on_click=eliminar_factura_actual),
                     ]
                 )
@@ -1546,7 +1546,7 @@ def main(page: ft.Page):
                         bgcolor=COLORES["header_blue"],
                         padding=ft.padding.symmetric(horizontal=4, vertical=6),
                         content=ft.Row([
-                            ft.IconButton("arrow_back", icon_color="white", on_click=lambda _: page.go("/")),
+                            ft.IconButton("arrow_back", icon_color="white", on_click=lambda _: page.navigate("/")),
                             ft.Container(expand=True),
                             ft.TextButton(
                                 content=ft.Text("GUARDAR", size=14, weight="bold", color="white"),
@@ -1659,7 +1659,7 @@ def main(page: ft.Page):
 
                     for id_c, n, d in (filas or []):
                         def ver_hist(c_id=id_c):
-                            return lambda _: (estado_historial_cli.update({"id_cliente": c_id}), page.go("/historial_cliente"))
+                            return lambda _: (estado_historial_cli.update({"id_cliente": c_id}), page.navigate("/historial_cliente"))
 
                         def editar_c(c_id=id_c, nom_v=n, dir_v=d):
                             def _ed(_):
@@ -1779,7 +1779,7 @@ def main(page: ft.Page):
                             "fecha": fac[1],
                             "nota_texto": fac[3] or ""
                         })
-                        page.go("/carrito")
+                        page.navigate("/carrito")
 
                     contenedor_detalle_factura.controls.append(
                         ft.Container(
@@ -2149,7 +2149,7 @@ def main(page: ft.Page):
                             total_f += pr[1] * cant
                         crear_factura_con_detalle(f_hoy, num_cli, total_f, usuario_actual, detalles)
                         inp_magico.value = ""
-                        page.go("/")
+                        page.navigate("/")
                     except Exception as ex:
                         mostrar_snack(page, f"Error: {ex}", COLORES["danger"])
                         btn.disabled = False
@@ -2194,9 +2194,9 @@ def main(page: ft.Page):
                 await asyncio.to_thread(inicializar_base_datos)
                 registrar_inicio("Base de datos inicializada correctamente")
                 page.clean()
-                registrar_inicio("Base de datos lista; solicitando navegación oficial de Flet hacia /login")
-                page.go("/login")
-                registrar_inicio(f"Solicitud page.go('/login') ejecutada; ruta observada inmediatamente: {page.route}")
+                registrar_inicio("Base de datos lista; navegando con la API compatible de Flet 1.0.4 hacia /login")
+                await page.push_route("/login")
+                registrar_inicio(f"Solicitud page.push_route('/login') ejecutada; ruta observada inmediatamente: {page.route}")
             except Exception:
                 detalle_error_inicio = traceback.format_exc()
                 registrar_inicio("ERROR AL PREPARAR LA APLICACIÓN", detalle_error_inicio)
