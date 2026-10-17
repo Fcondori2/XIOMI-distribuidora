@@ -660,7 +660,7 @@ def main(page: ft.Page):
                 content=ft.Text("¿Querés borrar todas las facturas de este dispositivo y reiniciar el contador a #1?\n(Los clientes y artículos se mantienen intactos)."),
                 actions=[
                     ft.TextButton("CANCELAR", on_click=lambda _: cerrar_dialogo(page, dlg_reset)),
-                    ft.ElevatedButton("SÍ, DEJAR EN CERO", bgcolor=COLORES["danger"], color="white", on_click=ejecutar_reinicio),
+                    ft.Button("SÍ, DEJAR EN CERO", bgcolor=COLORES["danger"], color="white", on_click=ejecutar_reinicio),
                 ]
             )
             mostrar_dialogo(page, dlg_reset)
@@ -830,7 +830,7 @@ def main(page: ft.Page):
                     content=ft.Column([inp_nom, inp_dir], tight=True, spacing=12),
                     actions=[
                         ft.TextButton("CANCELAR", on_click=lambda _: cerrar_dialogo(page, dlg_cli)),
-                        ft.ElevatedButton("GUARDAR", bgcolor=COLORES["header_green"], color="white", on_click=guardar_nuevo),
+                        ft.Button("GUARDAR", bgcolor=COLORES["header_green"], color="white", on_click=guardar_nuevo),
                     ]
                 )
                 mostrar_dialogo(page, dlg_cli)
@@ -1066,7 +1066,7 @@ def main(page: ft.Page):
                     content=ft.Column([inp_cod, inp_nom, inp_pre], tight=True, spacing=12),
                     actions=[
                         ft.TextButton("CANCELAR", on_click=lambda _: cerrar_dialogo(page, dlg_art)),
-                        ft.ElevatedButton("GUARDAR", bgcolor=COLORES["header_purple"], color="white", on_click=guardar_art_nuevo),
+                        ft.Button("GUARDAR", bgcolor=COLORES["header_purple"], color="white", on_click=guardar_art_nuevo),
                     ]
                 )
                 mostrar_dialogo(page, dlg_art)
@@ -1166,7 +1166,7 @@ def main(page: ft.Page):
                             ft.Container(height=12),
                             inp_user,
                             inp_pin,
-                            ft.ElevatedButton(
+                            ft.Button(
                                 "INGRESAR",
                                 icon="login",
                                 on_click=ingresar,
@@ -1442,7 +1442,7 @@ def main(page: ft.Page):
                         content=inp_f,
                         actions=[
                             ft.TextButton("CANCELAR", on_click=lambda _: cerrar_dialogo(page, dlg_f)),
-                            ft.ElevatedButton("ACEPTAR", bgcolor=COLORES["header_blue"], color="white", on_click=guardar_f)
+                            ft.Button("ACEPTAR", bgcolor=COLORES["header_blue"], color="white", on_click=guardar_f)
                         ]
                     )
                     mostrar_dialogo(page, dlg_f)
@@ -1645,7 +1645,7 @@ def main(page: ft.Page):
                 inp_nom_c = ft.TextField(label="Nombre / Razón social", expand=True, dense=True)
                 inp_dir_c = ft.TextField(label="Dirección de entrega", expand=True, dense=True)
                 buscador_cli_g = ft.TextField(hint_text="Buscar cliente...", prefix_icon="search", expand=True, dense=True)
-                btn_guardar_c = ft.ElevatedButton("GUARDAR", bgcolor=COLORES["header_green"], color="white")
+                btn_guardar_c = ft.Button("GUARDAR", bgcolor=COLORES["header_green"], color="white")
                 estado_ed_cli = {"editando": False, "id_viejo": None}
                 lista_padron_cli = ft.ListView(expand=True, spacing=0)
 
@@ -1790,7 +1790,7 @@ def main(page: ft.Page):
                                 ft.Row([
                                     ft.Text(f"Vista Previa Factura #{fac[0]} ({fecha_ui(fac[1])})", size=15, weight="bold", expand=True),
                                     ft.TextButton("ABRIR", on_click=abrir_en_editor),
-                                    ft.ElevatedButton("PDF", icon="print", bgcolor=COLORES["header_blue"], color="white", on_click=imp_pdf),
+                                    ft.Button("PDF", icon="print", bgcolor=COLORES["header_blue"], color="white", on_click=imp_pdf),
                                 ]),
                                 ft.Text(f"Vendedor: {fac[5] or 'ADMIN'} | Total: {formato_ars_corto(fac[4])} ARS", size=13, weight="bold"),
                                 ft.Divider(height=1, color=COLORES["divider"]),
@@ -1892,7 +1892,7 @@ def main(page: ft.Page):
                 inp_nom = ft.TextField(label="Descripción", expand=True, dense=True)
                 inp_pre = ft.TextField(label="Precio ARS", keyboard_type="number", width=120, dense=True)
                 buscador_p = ft.TextField(hint_text="Buscar artículo...", prefix_icon="search", expand=True, dense=True)
-                btn_guardar_p = ft.ElevatedButton("GUARDAR", bgcolor=COLORES["header_purple"], color="white")
+                btn_guardar_p = ft.Button("GUARDAR", bgcolor=COLORES["header_purple"], color="white")
                 estado_ed_p = {"editando": False, "codigo_viejo": None}
                 lista_prod_ui = ft.ListView(expand=True, spacing=0)
 
@@ -2038,14 +2038,14 @@ def main(page: ft.Page):
                         content=ft.Column([
                             ft.Row([inp_fec, dd_usu], spacing=10),
                             ft.Row([inp_ini, inp_fin], spacing=10),
-                            ft.ElevatedButton("LISTADO DE COBRANZA DIARIA (PDF)", icon="request_quote", bgcolor=COLORES["header_green"], color="white", width=float("inf"), on_click=lambda _: pedir_pdf("cobranza_dia")),
-                            ft.ElevatedButton("RENDICIÓN VENDEDORES DEL DÍA (PDF)", icon="people", bgcolor=COLORES["header_blue"], color="white", width=float("inf"), on_click=lambda _: pedir_pdf("preventistas_dia")),
-                            ft.ElevatedButton("RENDICIÓN VENDEDORES POR RANGO (PDF)", icon="date_range", bgcolor=COLORES["header_blue"], color="white", width=float("inf"), on_click=lambda _: pedir_pdf("preventistas_rango")),
-                            ft.ElevatedButton("SALDOS MERCADERÍA DEL DÍA (PDF)", icon="inventory_2", bgcolor=COLORES["header_purple"], color="white", width=float("inf"), on_click=lambda _: pedir_pdf("mercaderia_dia")),
-                            ft.ElevatedButton("MERCADERÍA POR VENDEDOR (PDF)", icon="person", bgcolor=COLORES["header_purple"], color="white", width=float("inf"), on_click=lambda _: pedir_pdf("mercaderia_usu")),
+                            ft.Button("LISTADO DE COBRANZA DIARIA (PDF)", icon="request_quote", bgcolor=COLORES["header_green"], color="white", width=float("inf"), on_click=lambda _: pedir_pdf("cobranza_dia")),
+                            ft.Button("RENDICIÓN VENDEDORES DEL DÍA (PDF)", icon="people", bgcolor=COLORES["header_blue"], color="white", width=float("inf"), on_click=lambda _: pedir_pdf("preventistas_dia")),
+                            ft.Button("RENDICIÓN VENDEDORES POR RANGO (PDF)", icon="date_range", bgcolor=COLORES["header_blue"], color="white", width=float("inf"), on_click=lambda _: pedir_pdf("preventistas_rango")),
+                            ft.Button("SALDOS MERCADERÍA DEL DÍA (PDF)", icon="inventory_2", bgcolor=COLORES["header_purple"], color="white", width=float("inf"), on_click=lambda _: pedir_pdf("mercaderia_dia")),
+                            ft.Button("MERCADERÍA POR VENDEDOR (PDF)", icon="person", bgcolor=COLORES["header_purple"], color="white", width=float("inf"), on_click=lambda _: pedir_pdf("mercaderia_usu")),
                             ft.Divider(),
-                            ft.Row([inp_num, ft.ElevatedButton("REIMPRIMIR N°", icon="print", bgcolor=COLORES["header_blue"], color="white", on_click=lambda _: pedir_pdf("factura_unica"))]),
-                            ft.ElevatedButton("IMPRIMIR TODAS LAS FACTURAS DEL DÍA", icon="print", bgcolor="#0F172A", color="white", width=float("inf"), on_click=lambda _: pedir_pdf("lote_diario")),
+                            ft.Row([inp_num, ft.Button("REIMPRIMIR N°", icon="print", bgcolor=COLORES["header_blue"], color="white", on_click=lambda _: pedir_pdf("factura_unica"))]),
+                            ft.Button("IMPRIMIR TODAS LAS FACTURAS DEL DÍA", icon="print", bgcolor="#0F172A", color="white", width=float("inf"), on_click=lambda _: pedir_pdf("lote_diario")),
                         ], spacing=10, scroll="auto")
                     )
                 ], spacing=0, expand=True)
@@ -2169,7 +2169,7 @@ def main(page: ft.Page):
                         expand=True,
                         content=ft.Column([
                             inp_magico,
-                            ft.ElevatedButton("PROCESAR PEDIDO", icon="bolt", bgcolor=COLORES["header_blue"], color="white", width=float("inf"), on_click=procesar_ia)
+                            ft.Button("PROCESAR PEDIDO", icon="bolt", bgcolor=COLORES["header_blue"], color="white", width=float("inf"), on_click=procesar_ia)
                         ], spacing=12, expand=True)
                     )
                 ], spacing=0, expand=True)
