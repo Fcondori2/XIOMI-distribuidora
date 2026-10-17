@@ -36,7 +36,7 @@ def main(page: ft.Page):
                         ft.Text("XIOMI: ERROR AL INICIAR", size=22, weight=ft.FontWeight.BOLD, color="#B91C1C"),
                         ft.Text(f"{type(exc).__name__}: {exc}", size=15, color="#111827", selectable=True),
                         ft.Text(error[-8000:], size=11, color="#374151", selectable=True),
-                        ft.ElevatedButton("Volver a probar", on_click=reiniciar_pantalla),
+                        ft.Button("Volver a probar", on_click=reiniciar_pantalla),
                     ],
                     scroll=ft.ScrollMode.AUTO,
                     expand=True,
@@ -49,7 +49,7 @@ def main(page: ft.Page):
         page.clean()
         main(page)
 
-    boton = ft.ElevatedButton(
+    boton = ft.Button(
         "ABRIR SISTEMA XIOMI",
         on_click=iniciar_sistema,
         bgcolor="#2C4B70",
@@ -80,6 +80,5 @@ def main(page: ft.Page):
     page.update()
 
 
-# Importante: Flet debe ejecutar el punto de entrada también cuando empaqueta
-# el módulo para Android; no depender de __name__ == "__main__".
+# Flet debe ejecutar el punto de entrada también al empaquetar Android.
 ft.run(main)
