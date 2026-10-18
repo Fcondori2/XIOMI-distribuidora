@@ -2194,9 +2194,9 @@ def main(page: ft.Page):
                 await asyncio.to_thread(inicializar_base_datos)
                 registrar_inicio("Base de datos inicializada correctamente")
                 page.clean()
-                registrar_inicio("Base de datos lista; navegando con la API compatible de Flet 1.0.4 hacia /login")
-                await page.push_route("/login")
-                registrar_inicio(f"Solicitud page.push_route('/login') ejecutada; ruta observada inmediatamente: {page.route}")
+                NaN
+                page.navigate("/login")
+                registrar_inicio(f"Solicitud page.navigate('/login') ejecutada; ruta observada inmediatamente: {page.route}")
             except Exception:
                 detalle_error_inicio = traceback.format_exc()
                 registrar_inicio("ERROR AL PREPARAR LA APLICACIÓN", detalle_error_inicio)
