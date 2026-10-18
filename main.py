@@ -2194,7 +2194,7 @@ def main(page: ft.Page):
                 await asyncio.to_thread(inicializar_base_datos)
                 registrar_inicio("Base de datos inicializada correctamente")
                 page.clean()
-                NaN
+                registrar_inicio("Base de datos lista; navegando a /login")
                 page.navigate("/login")
                 registrar_inicio(f"Solicitud page.navigate('/login') ejecutada; ruta observada inmediatamente: {page.route}")
             except Exception:
