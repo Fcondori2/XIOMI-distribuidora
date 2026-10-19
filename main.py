@@ -2193,10 +2193,12 @@ def main(page: ft.Page):
             try:
                 await asyncio.to_thread(inicializar_base_datos)
                 registrar_inicio("Base de datos inicializada correctamente")
-                page.clean()
-                registrar_inicio("Base de datos lista; navegando a /login")
-                page.navigate("/login")
-                registrar_inicio(f"Solicitud page.navigate('/login') ejecutada; ruta observada inmediatamente: {page.route}")
+                registrar_inicio("Base de datos lista; preparando inicio de sesión directamente")
+                # No depender del evento de navegación asíncrono en Android.
+                # Fijar la ruta y ejecutar el constructor de pantalla en esta misma tarea.
+                page.route = "/login"
+                cambiar_pantalla()
+                registrar_inicio(f"Constructor de login invocado directamente; ruta={page.route}; vistas={len(page.views)}")
             except Exception:
                 detalle_error_inicio = traceback.format_exc()
                 registrar_inicio("ERROR AL PREPARAR LA APLICACIÓN", detalle_error_inicio)
