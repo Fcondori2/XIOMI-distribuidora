@@ -1,48 +1,50 @@
-name: Build APK
+name: Build Android APK
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, master ]
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Descargar el código del repositorio
+      - name: Checkout del repositorio
         uses: actions/checkout@v4
 
-      - name: Configurar Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-
-      - name: Configurar Java (necesario para compilar Android)
+      - name: Configurar Java 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Configurar Flutter requerido por Flet
+      - name: Configurar Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.44.8'
+          flutter-version: '3.22.x'
+          channel: 'stable'
           cache: true
 
-      - name: Instalar dependencias compatibles
-        run: python -m pip install -r requirements.txt
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
 
-      - name: Aceptar licencias de Android
-        run: yes | flutter doctor --android-licenses || true
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install flet
 
-      - name: Verificar versiones de Flet y Flutter requeridas
-        run: python -c "import flet, flet.version; print('Flet:', flet.__version__); print('Flutter requerido por Flet:', flet.version.flutter_version)"
+      - name: Compilar APK con Flet
+        run: |
+          flet build apk --project "XIOMI Distribuidora"
 
-      - name: Compilar APK
-        run: flet build apk --verbose --module-name app.py
-
-      - name: Subir el APK como artefacto descargable
+      - name: Subir APK como artefacto descargable
         uses: actions/upload-artifact@v4
         with:
-          name: XiomiDistribuidora-apk
+          name: XIOMI_Distribuidora_APK
           path: build/apk/*.apk
+          retention-days: 14
