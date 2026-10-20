@@ -1,2 +1,2 @@
-flet==1.0.4
+flet
 fpdf2
