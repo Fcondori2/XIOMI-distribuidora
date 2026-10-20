@@ -1270,7 +1270,16 @@ def main(page: ft.Page):
             cargar_articulos_modal("")
 
         def cambiar_pantalla(e=None):
-            page.views.clear()
+            # Mantener siempre una vista raíz para evitar la pantalla gris de Flet.
+            if page.views:
+                page.views[:] = [page.views[-1]]
+            else:
+                page.views.append(
+                    ft.View(
+                        "/loading",
+                        [ft.Container(content=ft.Text("Iniciando XIOMI Distribuidora...", color="#163A5F"), padding=24)],
+                    )
+                )
             cerrar_overlay()
             usuario_actual = obtener_usuario()
 
@@ -1326,6 +1335,8 @@ def main(page: ft.Page):
                         bgcolor="#FFFFFF",
                     )
                 )
+                # Conservar solo la vista de inicio de sesión como raíz.
+                page.views[:] = [page.views[-1]]
                 page.update()
                 return
 
@@ -2311,6 +2322,8 @@ def main(page: ft.Page):
                     bgcolor="#FFFFFF",
                 )
             )
+            # Reemplazar la vista anterior sin dejar la lista vacía.
+            page.views[:] = [page.views[-1]]
             page.update()
 
         page.on_route_change = cambiar_pantalla
@@ -2320,7 +2333,11 @@ def main(page: ft.Page):
     except Exception:
         error_detalle = traceback.format_exc()
         try:
-            page.views.clear()
+            # No dejar la página sin una vista si ocurre un error al iniciar.
+            if not page.views:
+                page.views.append(
+                    ft.View("/error-cargando", [ft.Text("Se produjo un error al iniciar XIOMI.", color="red")])
+                )
             page.views.append(
                 ft.View(
                     "/error",
