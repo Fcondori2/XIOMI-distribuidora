@@ -8,10 +8,15 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout del repositorio
+      - name: Descargar el código
         uses: actions/checkout@v4
+
+      - name: Configurar Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
 
       - name: Configurar Java 17
         uses: actions/setup-java@v4
@@ -22,15 +27,9 @@ jobs:
       - name: Configurar Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.22.x'
+          flutter-version: '3.44.8'
           channel: 'stable'
           cache: true
-
-      - name: Configurar Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-          cache: 'pip'
 
       - name: Instalar dependencias
         run: |
@@ -38,13 +37,18 @@ jobs:
           pip install -r requirements.txt
           pip install flet
 
-      - name: Compilar APK con Flet
-        run: |
-          flet build apk --project "XIOMI Distribuidora"
+      - name: Verificar sintaxis de main.py
+        run: python -m py_compile main.py
 
-      - name: Subir APK como artefacto descargable
+      - name: Compilar APK
+        run: flet build apk --verbose --module-name main.py
+
+      - name: Subir APK
         uses: actions/upload-artifact@v4
         with:
           name: XIOMI_Distribuidora_APK
-          path: build/apk/*.apk
+          path: |
+            build/app/outputs/flutter-apk/app-release.apk
+            build/apk/*.apk
+          if-no-files-found: error
           retention-days: 14
